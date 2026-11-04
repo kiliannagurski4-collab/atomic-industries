@@ -38,6 +38,9 @@ h1 span { color:transparent; -webkit-text-stroke:2px var(--green); }
 .cd-note { margin-top:14px; color:var(--muted); }
 .cta { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:36px; }
 .btn { display:inline-block; text-decoration:none; font-family:'Chakra Petch'; font-weight:700; text-transform:uppercase; letter-spacing:.12em; font-size:14px; padding:15px 24px; border:1px solid var(--green); color:var(--green); transition:background .2s,color .2s; }
+.btn { background:none; cursor:pointer; }
+.toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%,20px); background:var(--green); color:#04140a; font-weight:600; padding:12px 18px; opacity:0; transition:.25s; pointer-events:none; z-index:5; width:max-content; max-width:calc(100vw - 32px); text-align:center; }
+.toast.on { opacity:1; transform:translate(-50%,0); }
 .btn.solid { background:var(--green); color:#04140a; }
 .btn:hover { background:var(--green); color:#04140a; }
 .btn:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
@@ -125,7 +128,7 @@ footer a:hover { color:var(--green); }
       <p class="cd-note m">Start: 2. September 2027</p>
       <div class="cta">
         <a class="btn solid" href="https://wa.me/491791633995?text=Hallo%20Atomic%20Industries%2C%20ich%20interessiere%20mich%20f%C3%BCr%20eine%20KI-L%C3%B6sung." target="_blank" rel="noopener">Per WhatsApp schreiben</a>
-        <a class="btn" href="mailto:kilian@atomic-industries.de">E-Mail senden</a>
+        <button class="btn" type="button" id="copyMail">E-Mail-Adresse kopieren</button>
       </div>
     </section>
 
@@ -178,6 +181,7 @@ footer a:hover { color:var(--green); }
   </footer>
 </div>
 <div class="bar"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function () {
   var start = new Date('2027-09-02T00:00:00+02:00').getTime();
@@ -192,6 +196,12 @@ footer a:hover { color:var(--green); }
   document.getElementById('y').textContent = new Date().getFullYear();
   function openHash() { var d = document.getElementById(location.hash.slice(1)); if (d && d.tagName === 'DETAILS') d.open = true; }
   window.addEventListener('hashchange', openHash); openHash();
+  var mail = 'kilian@atomic-industries.de', toast = document.getElementById('toast'), tt;
+  function show(t) { toast.textContent = t; toast.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('on'); }, 2600); }
+  document.getElementById('copyMail').addEventListener('click', function () {
+    function fallback() { var ta = document.createElement('textarea'); ta.value = mail; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); show('Kopiert: ' + mail); } catch (e) { show(mail); } ta.remove(); }
+    if (navigator.clipboard) navigator.clipboard.writeText(mail).then(function () { show('Kopiert: ' + mail); }, fallback); else fallback();
+  });
 })();
 </script>
 </body>
